@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../database/db.js";
 import { Personaje } from "./Personaje.js";
 
-export const Pelicula = sequelize.define("Pelicula", {
+export const Pelicula = sequelize.define("pelicula", {
   imagen: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -10,6 +10,7 @@ export const Pelicula = sequelize.define("Pelicula", {
   titulo: {
     type: DataTypes.STRING,
     allowNull: false,
+    primaryKey: true,
   },
   calificacion: {
     type: DataTypes.INTEGER,

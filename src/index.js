@@ -5,11 +5,11 @@ import './models/Personaje.js'
 import './models/Pelicula.js'
 import './models/Genero.js'
 
-const port = 3000;
+const port = 4000;
 
 async function main() {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: false });
     app.listen(port, console.log(`Conectado en el puerto ${port}`));
   } catch (error) {
     console.log("Error al conectar con la base de datos");

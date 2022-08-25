@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/db.js";
 
-export const Personaje = sequelize.define("Personajes", {
+export const Personaje = sequelize.define("personaje", {
   imagen: {
     type: DataTypes.STRING,
     allowNull: true,

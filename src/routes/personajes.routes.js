@@ -4,7 +4,7 @@ import {
   createCharacters,
   deleteCharacters,
   updateCharacters,
-} from "../controllers/crudController.js";
+} from "../controllers/crud.controller";
 
 const router = Router();
 

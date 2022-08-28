@@ -1,9 +1,10 @@
 import { sequelize } from "./database/db.js";
 import app from "./app.js";
 
-import './models/Personaje.js'
-import './models/Pelicula.js'
-import './models/Genero.js'
+import "./models/Personaje.js";
+import "./models/Pelicula.js";
+import "./models/Genero.js";
+import "./models/Usuarios.js";
 
 const port = 4000;
 

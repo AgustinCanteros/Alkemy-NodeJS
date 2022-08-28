@@ -3,11 +3,14 @@ import { Personaje } from "../models/Personaje.js";
 
 //OBTENER TODOS LOS PERSONAJES
 export const getCharacters = async (req, res) => {
+  console.log(localStorage);
   try {
-    if (req.query) { //SI SE PASA UN QUERY REALIZO LA BUSQUEDA ESPECIFICA, SINO BUSCO TODOS LOS PERSONAJES
+    if (req.query.name || req.query.age) {
+      //SI SE PASA UN QUERY REALIZO LA BUSQUEDA ESPECIFICA, SINO BUSCO TODOS LOS PERSONAJES
       const query = Object.keys(req.query).join(); //OBTENGO EL QUERY KEY QUE ME LLEGA DESDE EL CLIENTE, LO TRANSFORMO EN ARRAY CON .KEYS Y EN STRING CON .JOIN
       const queryValue = req.query[query]; //OBTENGO EL QUERY VALUE
-      if (queryValue.length === 0) { //VERIFICO QUE SE QUERY NO ESTE VACIO, SI LO ESTA DEVUELVO UN MENSAJE INDICANDOLO
+      if (queryValue.length === 0) {
+        //VERIFICO QUE SE QUERY NO ESTE VACIO, SI LO ESTA DEVUELVO UN MENSAJE INDICANDOLO
         res.json({ message: "No se paso ningun valor por query" });
       } else {
         const variablesBusqueda = {
@@ -20,13 +23,15 @@ export const getCharacters = async (req, res) => {
             [parametro]: queryValue,
           },
         });
-        if (personaje.length === 0) { //VERIFICO QUE SE EL PERSONAJE EXISTA EN LA DB, SI NO EXISTE DEVUELVO UN MENSAJE INDICANDOLO Y SI EXISTE LO DEVUELVO POR COMO JSON
+        if (personaje.length === 0) {
+          //VERIFICO QUE SE EL PERSONAJE EXISTA EN LA DB, SI NO EXISTE DEVUELVO UN MENSAJE INDICANDOLO Y SI EXISTE LO DEVUELVO POR COMO JSON
           res.json({ message: "No se encontro el personaje" });
         } else {
           res.json(personaje);
         }
       }
     } else {
+      console.log("b");
       const characters = await Personaje.findAll({
         attibutes: ["nombre", "imagen"], //SOLO PIDO NOMBRE Y IMAGEN CON EL PARAMETRO ATTRIBUTES
       }); //TRAER TODOS LOS PERSONAJES DE LA DB

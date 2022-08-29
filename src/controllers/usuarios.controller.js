@@ -1,4 +1,3 @@
-import e from "express";
 import Usuario from "../models/Usuarios.js";
 
 export const usuarioLogin = async (req, res) => {

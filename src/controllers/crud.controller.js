@@ -1,16 +1,11 @@
-//IMPORTAR MODELO DE LA BASE DE DATOS
 import { Personaje } from "../models/Personaje.js";
 
-//OBTENER TODOS LOS PERSONAJES
 export const getCharacters = async (req, res) => {
-  console.log(localStorage);
   try {
     if (req.query.name || req.query.age) {
-      //SI SE PASA UN QUERY REALIZO LA BUSQUEDA ESPECIFICA, SINO BUSCO TODOS LOS PERSONAJES
-      const query = Object.keys(req.query).join(); //OBTENGO EL QUERY KEY QUE ME LLEGA DESDE EL CLIENTE, LO TRANSFORMO EN ARRAY CON .KEYS Y EN STRING CON .JOIN
-      const queryValue = req.query[query]; //OBTENGO EL QUERY VALUE
+      const query = Object.keys(req.query).join().toLoweCase();
+      const queryValue = req.query[query].toLoweCase();
       if (queryValue.length === 0) {
-        //VERIFICO QUE SE QUERY NO ESTE VACIO, SI LO ESTA DEVUELVO UN MENSAJE INDICANDOLO
         res.json({ message: "No se paso ningun valor por query" });
       } else {
         const variablesBusqueda = {
@@ -24,17 +19,15 @@ export const getCharacters = async (req, res) => {
           },
         });
         if (personaje.length === 0) {
-          //VERIFICO QUE SE EL PERSONAJE EXISTA EN LA DB, SI NO EXISTE DEVUELVO UN MENSAJE INDICANDOLO Y SI EXISTE LO DEVUELVO POR COMO JSON
           res.json({ message: "No se encontro el personaje" });
         } else {
           res.json(personaje);
         }
       }
     } else {
-      console.log("b");
       const characters = await Personaje.findAll({
-        attibutes: ["nombre", "imagen"], //SOLO PIDO NOMBRE Y IMAGEN CON EL PARAMETRO ATTRIBUTES
-      }); //TRAER TODOS LOS PERSONAJES DE LA DB
+        attributes: ["nombre", "imagen"],
+      });
       if (characters != 0) {
         res.json(characters);
       } else {
@@ -48,17 +41,16 @@ export const getCharacters = async (req, res) => {
   }
 };
 
-//CREAR UN PERSONAJE
 export const createCharacters = async (req, res) => {
-  const { image, nombre, edad, peso, historia, apariciones } = req.body; //EXTRAER LOS DATOS ENVIADOS DESDE EL CLIENTE
+  const { image, nombre, edad, peso, historia, apariciones } = req.body;
   try {
     const newPersonaje = await Personaje.create({
       image,
-      nombre,
+      nombre: nombre.toLoweCase(),
       edad,
       peso,
       historia,
-      apariciones,
+      apariciones: apariciones.toLoweCase(),
     });
     res.json(newPersonaje);
   } catch (error) {
@@ -74,13 +66,12 @@ export const createCharacters = async (req, res) => {
   }
 };
 
-//ELIMINAR UN PERSONAJE
 export const deleteCharacters = async (req, res) => {
   const { name } = req.params;
   try {
     await Personaje.destroy({
       where: {
-        name,
+        name: name.toLoweCase(),
       },
     });
     res
@@ -91,23 +82,22 @@ export const deleteCharacters = async (req, res) => {
   }
 };
 
-//ACTUALIZAR UN PERSONAJE
 export const updateCharacters = async (req, res) => {
   const { name } = req.params;
   const { nombre, imagen, edad, peso, historia, apariciones } = req.body;
   try {
     await Personaje.update(
       {
-        nombre,
+        nombre: nombre.toLoweCase(),
         imagen,
         edad,
         peso,
         historia,
-        apariciones,
+        apariciones: apariciones.toLoweCase(),
       },
       {
         where: {
-          nombre: name,
+          nombre: name.toLoweCase(),
         },
       }
     );

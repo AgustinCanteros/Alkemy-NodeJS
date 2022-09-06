@@ -14,12 +14,10 @@ export const Genero = sequelize.define("genero", {
   },
   peliAsoc: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
-export const Pelicula_gen = sequelize.define("pelicula_gen", {
-  role: DataTypes.STRING,
-});
+export const Pelicula_gen = sequelize.define("pelicula_gen", {});
 Pelicula.belongsToMany(Genero, { through: Pelicula_gen });
 Genero.belongsToMany(Pelicula, { through: Pelicula_gen });

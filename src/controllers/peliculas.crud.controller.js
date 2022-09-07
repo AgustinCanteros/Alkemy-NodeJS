@@ -1,12 +1,12 @@
 import { Pelicula } from "../models/Pelicula.js";
 import { Genero } from "../models/Genero.js";
 
+//OBTENER PELICULAS
 export const getMovies = async (req, res) => {
   try {
     if (req.query.name || req.query.genre) {
       const query = Object.keys(req.query).join().toLowerCase();
       const queryValue = req.query[query].toLowerCase();
-      console.log(queryValue === "comedia");
       if (queryValue.length === 0)
         return res.json({ message: "No se pasaron valores por query" });
       const variablesBusqueda = {
@@ -27,6 +27,24 @@ export const getMovies = async (req, res) => {
           },
         });
         return res.json(peliculas);
+      } else if (variablesBusqueda[query] === "name") {
+        const peliculas = await Pelicula.findAll({
+          where: {
+            nombre: queryValue,
+          },
+          include: {
+            model: Genero,
+            attributes: ["nombre"],
+            through: {
+              attributes: [],
+            },
+          },
+        });
+        if (peliculas[0].length === 0)
+          return res.json({
+            message: "No se encontraron peliculas con ese nombre",
+          });
+        return res.json(peliculas);
       }
     }
     const movies = await Pelicula.findAll();
@@ -40,6 +58,7 @@ export const getMovies = async (req, res) => {
   }
 };
 
+//CREAR PELICULAS
 export const createMovies = async (req, res) => {
   const { imagen, titulo, calificacion, personajesAsoc, genero } = req.body;
   try {
@@ -66,6 +85,7 @@ export const createMovies = async (req, res) => {
   }
 };
 
+//ELIMINAR PELICULAS
 export const deleteMovie = async (req, res) => {
   const { titulo } = req.params;
   try {
@@ -74,12 +94,14 @@ export const deleteMovie = async (req, res) => {
         titulo: titulo.toLowerCase(),
       },
     });
-    console.log(eliminado);
+    if (eliminado) return res.json({ message: "Se ha eliminado con exito" });
+    res.json({ message: "Error al eliminar" });
   } catch (error) {
     res.send(error);
   }
 };
 
+//ACTUALIZAR PELICULAS
 export const updateMovies = async (req, res) => {
   const { name } = req.params;
   const { titulo, imagen, calificacion, personajesAsoc } = req.body;

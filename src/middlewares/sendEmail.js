@@ -2,8 +2,7 @@ import sgMail from "@sendgrid/mail";
 
 export async function sendEmail(usuarioEmail) {
   try {
-    const SENDGRID_API_KEY =
-      "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";
+    const SENDGRID_API_KEY = //INGRESE UNA APIKEY DE SENDGRID
     sgMail.setApiKey(SENDGRID_API_KEY);
     const msg = {
       to: usuarioEmail,

@@ -6,7 +6,7 @@ export async function sendEmail(usuarioEmail) {
     sgMail.setApiKey(SENDGRID_API_KEY);
     const msg = {
       to: usuarioEmail,
-      from: "canterosagustin10@gmail.com", // Use the email address or domain you verified above
+      from: "", //INGRESE EL EMAIL VERIFICADO EN SENDGRID 
       subject: "Registro API Disney Alkemy",
       text: "Bienvenido",
     };

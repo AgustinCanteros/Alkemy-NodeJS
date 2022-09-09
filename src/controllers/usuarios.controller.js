@@ -50,11 +50,8 @@ export const usuarioRegister = async (req, res) => {
       email,
       password: await Usuario.encriptarPassword(password),
     });
-    const token = jwt.sign({ id: newUsuario.dataValues.email }, config.SECRET, {
-      expiresIn: 86400,
-    });
     sendEmail(newUsuario.email);
-    res.json({ registro: "Se ha registrado con exito", token });
+    res.json({ registro: "Se ha registrado con exito" });
   } catch (error) {
     res.json({ message: "Error al registrarse" });
   }

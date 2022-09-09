@@ -79,6 +79,18 @@ export const createMovies = async (req, res) => {
         calificacion,
       });
       newPelicula.addPersonaje(verfPersonaje);
+      if (genero.length != 0) {
+        await genero.map(async (g) => {
+          let genre = await Genero.findAll({
+            where: {
+              nombre: g.toLowerCase(),
+            },
+            attributes: ["nombre", "imagen"],
+          });
+          newPelicula.addGenero(genre);
+        });
+      }
+      res.json(newPelicula);
     } else {
       await personajesAsoc.map(async (p) => {
         const personajeVer = await Personaje.findAll({
@@ -91,20 +103,19 @@ export const createMovies = async (req, res) => {
             message: "No se encontro el personaje en la base de datos",
           });
       });
-    }
-
-    if (genero.length != 0) {
-      await genero.map(async (g) => {
-        let genre = await Genero.findAll({
-          where: {
-            nombre: g.toLowerCase(),
-          },
-          attributes: ["nombre", "imagen"],
+      if (genero.length != 0) {
+        await genero.map(async (g) => {
+          let genre = await Genero.findAll({
+            where: {
+              nombre: g.toLowerCase(),
+            },
+            attributes: ["nombre", "imagen"],
+          });
+          newPelicula.addGenero(genre);
         });
-        newPelicula.addGenero(genre);
-      });
+      }
+      res.json(newPelicula);
     }
-    res.json(newPelicula);
   } catch (error) {
     res.send(error);
   }

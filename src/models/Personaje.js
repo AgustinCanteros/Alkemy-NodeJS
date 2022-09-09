@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/db.js";
+import { Pelicula } from "./Pelicula.js";
 
 export const Personaje = sequelize.define("personaje", {
   imagen: {
@@ -23,8 +24,8 @@ export const Personaje = sequelize.define("personaje", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  apariciones: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
 });
+
+export const Peliculas_personajes = sequelize.define("pelicula_personajes", {});
+Pelicula.belongsToMany(Personaje, { through: Peliculas_personajes });
+Personaje.belongsToMany(Pelicula, { through: Peliculas_personajes });

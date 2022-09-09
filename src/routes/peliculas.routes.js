@@ -5,12 +5,13 @@ import {
   deleteMovie,
   updateMovies,
 } from "../controllers/peliculas.crud.controller.js";
+import { tokenAuth } from "../middlewares/index.js";
 
 const router = Router();
 
-router.get("/movies", getMovies);
-router.post("/movies", createMovies);
-router.delete("/movies/:name", deleteMovie);
-router.put("/movies/:name", updateMovies);
+router.get("/movies", tokenAuth, getMovies);
+router.post("/movies", tokenAuth, createMovies);
+router.delete("/movies/:name", tokenAuth, deleteMovie);
+router.put("/movies/:name", tokenAuth, updateMovies);
 
 export default router;

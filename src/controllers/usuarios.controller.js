@@ -1,6 +1,7 @@
 import Usuario from "../models/Usuarios.js";
 import config from "../config.js";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../middlewares/sendEmail.js";
 
 export const usuarioLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -18,8 +19,11 @@ export const usuarioLogin = async (req, res) => {
       password,
       usuario[0].dataValues.password
     );
+    const token = jwt.sign({ id: usuario[0].dataValues.email }, config.SECRET, {
+      expiresIn: 86400,
+    });
     if (compPass) {
-      res.status(200).json({ message: "Has iniciado sesion con exito" });
+      res.status(200).json({ message: "Has iniciado sesion con exito", token });
     } else {
       res.status(500).json({ message: "La contraseña es incorrecta" });
     }
@@ -30,6 +34,8 @@ export const usuarioLogin = async (req, res) => {
 
 export const usuarioRegister = async (req, res) => {
   try {
+    const regEmail =
+      /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
     const { email, password } = req.body;
     const compEmail = await Usuario.findAll({
       where: {
@@ -38,13 +44,16 @@ export const usuarioRegister = async (req, res) => {
     });
     if (compEmail.length > 0)
       return res.json({ message: "El email ya se encuentra registrado" });
+    if (!regEmail.test(email))
+      return res.json({ message: "El email ingresado no es valido" });
     const newUsuario = await Usuario.create({
       email,
       password: await Usuario.encriptarPassword(password),
     });
     const token = jwt.sign({ id: newUsuario.dataValues.email }, config.SECRET, {
-      expiresIn: 86400, //24HS
+      expiresIn: 86400,
     });
+    sendEmail(newUsuario.email);
     res.json({ registro: "Se ha registrado con exito", token });
   } catch (error) {
     res.json({ message: "Error al registrarse" });

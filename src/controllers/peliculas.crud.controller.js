@@ -1,5 +1,6 @@
 import { Pelicula } from "../models/Pelicula.js";
 import { Genero } from "../models/Genero.js";
+import { Personaje } from "../models/Personaje.js";
 
 //OBTENER PELICULAS
 export const getMovies = async (req, res) => {
@@ -10,7 +11,7 @@ export const getMovies = async (req, res) => {
       if (queryValue.length === 0)
         return res.json({ message: "No se pasaron valores por query" });
       const variablesBusqueda = {
-        name: "nombre",
+        name: "name",
         genre: "genero",
       };
       if (variablesBusqueda[query] === "genero") {
@@ -30,7 +31,7 @@ export const getMovies = async (req, res) => {
       } else if (variablesBusqueda[query] === "name") {
         const peliculas = await Pelicula.findAll({
           where: {
-            nombre: queryValue,
+            titulo: queryValue,
           },
           include: {
             model: Genero,
@@ -62,12 +63,36 @@ export const getMovies = async (req, res) => {
 export const createMovies = async (req, res) => {
   const { imagen, titulo, calificacion, personajesAsoc, genero } = req.body;
   try {
-    const newPelicula = await Pelicula.create({
-      imagen,
-      titulo: titulo.toLowerCase(),
-      calificacion,
-      personajesAsoc,
-    });
+    if (!personajesAsoc[0])
+      return res.json({ message: "No indico los personajes asociados" });
+    if (typeof personajesAsoc === "string") {
+      const verfPersonaje = await Personaje.findAll({
+        where: {
+          nombre: personajesAsoc.toLowerCase(),
+        },
+      });
+      if (!verfPersonaje[0])
+        return res.json({ message: "Error al buscar el personaje asociado" });
+      const newPelicula = await Pelicula.create({
+        imagen,
+        titulo: titulo.toLowerCase(),
+        calificacion,
+      });
+      newPelicula.addPersonaje(verfPersonaje);
+    } else {
+      await personajesAsoc.map(async (p) => {
+        const personajeVer = await Personaje.findAll({
+          where: {
+            nombre: p,
+          },
+        });
+        if (!personajeVer[0])
+          return res.json({
+            message: "No se encontro el personaje en la base de datos",
+          });
+      });
+    }
+
     if (genero.length != 0) {
       await genero.map(async (g) => {
         let genre = await Genero.findAll({
@@ -111,7 +136,6 @@ export const updateMovies = async (req, res) => {
         titulo: titulo.toLowerCase(),
         imagen,
         calificacion,
-        personajesAsoc,
       },
       {
         where: {

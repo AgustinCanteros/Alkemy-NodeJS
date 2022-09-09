@@ -10,8 +10,8 @@ import { tokenAuth } from "../middlewares/index.js";
 const router = Router();
 
 router.get("/characters", tokenAuth, getCharacters);
-router.post("/characters", createCharacters);
-router.delete("/characters/:name", deleteCharacters);
-router.put("/characters/:name", updateCharacters);
+router.post("/characters", tokenAuth, createCharacters);
+router.delete("/characters/:name", tokenAuth, deleteCharacters);
+router.put("/characters/:name", tokenAuth, updateCharacters);
 
 export default router;

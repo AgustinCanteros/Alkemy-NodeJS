@@ -1,17 +1,37 @@
+import { Pelicula } from "../models/Pelicula.js";
 import { Personaje } from "../models/Personaje.js";
 
 export const getCharacters = async (req, res) => {
   try {
-    if (req.query.name || req.query.age) {
-      const query = Object.keys(req.query).join().toLoweCase();
-      const queryValue = req.query[query].toLoweCase();
+    if (req.query.name || req.query.age || req.query.movies) {
+      const query = Object.keys(req.query).join().toLowerCase();
+      const queryValue = req.query[query].toLowerCase();
       if (queryValue.length === 0) {
         res.json({ message: "No se paso ningun valor por query" });
       } else {
         const variablesBusqueda = {
           name: "nombre",
           age: "edad",
+          movies: "titulo",
         };
+        if (variablesBusqueda[query] === "titulo") {
+          const personajes = await Personaje.findAll({
+            include: {
+              where: {
+                titulo: queryValue,
+              },
+              model: Pelicula,
+              attributes: ["titulo"],
+              through: {
+                attributes: [],
+              },
+            },
+          });
+          console.log(personajes);
+          if (personajes.length === 0)
+            return res.json({ message: "No se encontraron personajes" });
+          return res.json(personajes);
+        }
         const parametro = variablesBusqueda[query];
         const personaje = await Personaje.findAll({
           where: {
@@ -44,13 +64,16 @@ export const getCharacters = async (req, res) => {
 export const createCharacters = async (req, res) => {
   const { image, nombre, edad, peso, historia, apariciones } = req.body;
   try {
+    const regPersonaje = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+    if (regPersonaje.test(nombre.toLowerCase()))
+      return res.json({ message: "No se permieten los caracteres especiales" });
     const newPersonaje = await Personaje.create({
       image,
-      nombre: nombre.toLoweCase(),
+      nombre: nombre.toLowerCase(),
       edad,
       peso,
       historia,
-      apariciones: apariciones.toLoweCase(),
+      apariciones: apariciones.toLowerCase(),
     });
     res.json(newPersonaje);
   } catch (error) {
@@ -71,7 +94,7 @@ export const deleteCharacters = async (req, res) => {
   try {
     await Personaje.destroy({
       where: {
-        name: name.toLoweCase(),
+        name: name.toLowerCase(),
       },
     });
     res
@@ -88,16 +111,16 @@ export const updateCharacters = async (req, res) => {
   try {
     await Personaje.update(
       {
-        nombre: nombre.toLoweCase(),
+        nombre: nombre.toLowerCase(),
         imagen,
         edad,
         peso,
         historia,
-        apariciones: apariciones.toLoweCase(),
+        apariciones: apariciones.toLowerCase(),
       },
       {
         where: {
-          nombre: name.toLoweCase(),
+          nombre: name.toLowerCase(),
         },
       }
     );

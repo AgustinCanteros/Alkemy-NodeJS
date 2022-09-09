@@ -12,10 +12,6 @@ export const Genero = sequelize.define("genero", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  peliAsoc: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
 });
 
 export const Pelicula_gen = sequelize.define("pelicula_gen", {});
